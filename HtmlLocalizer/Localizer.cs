@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,8 +9,8 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace HtmlLocalizer
 {
-    public class Localizer : IDisposable
-    {
+	public class Localizer : IDisposable
+	{
 		private Excel.Application _xlApp;
 		private Excel.Workbook xlWorkbook;
 		private Excel._Worksheet xlWorksheet;
@@ -37,6 +38,22 @@ namespace HtmlLocalizer
 			}
 		}
 
+		private string LoadTemplate(string path)
+		{
+			string templateContent = "";
+
+			try
+			{
+				templateContent = File.ReadAllText(path);
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+
+			return templateContent;
+		}
+
 		private bool OpenSpreadsheet(string path)
 		{
 			xlWorkbook = _xlApp.Workbooks.Open(path);
@@ -54,20 +71,13 @@ namespace HtmlLocalizer
 			int rowCount = xlRange.Rows.Count;
 			int colCount = xlRange.Columns.Count;
 
-			//iterate over the rows and columns and print to the console as it appears in the file
-			//excel is not zero based!!
-			for (int i = 1; i <= rowCount; i++)
-			{
-				for (int j = 1; j <= colCount; j++)
-				{
-					//new line
-					if (j == 1)
-						Console.Write("\r\n");
+			Dictionary<string, string> localizedValues = new Dictionary<string, string>();
 
-					//write the value to the console
-					if (xlRange.Cells[i, j] != null && xlRange.Cells[i, j].Value2 != null)
-						Console.Write(xlRange.Cells[i, j].Value2.ToString() + "\t");
-				}
+			// Iterate over the rows and columns. Note: Excel is not zero based
+			// Starting with 2 so we ignore the header
+			for (int i = 2; i <= rowCount; i++)
+			{
+				localizedValues.Add(xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString());
 			}
 
 			return true;
