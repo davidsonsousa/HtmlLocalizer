@@ -36,24 +36,41 @@ namespace HtmlLocalizer.UI
 		private void OpenExcelDialog(object sender, RoutedEventArgs e)
 		{
 			txtExcelFilesPath.Text = SystemDialogs.OpenFolderDialog();
+			Log($"Selecting Excel folder: \"{ txtExcelFilesPath.Text }\"");
 		}
 
 		private void OpenTemplateDialog(object sender, RoutedEventArgs e)
 		{
 			txtTemplatePath.Text = SystemDialogs.OpenFileDialog();
+			Log($"Selecting Template file: \"{ txtTemplatePath.Text }\"");
 		}
 
 		private void GenerateLocalizations(object sender, RoutedEventArgs e)
 		{
-			string[] files = FileManager.GetFilesInFolder(txtExcelFilesPath.Text);
+			Log("Starting localization...");
 
-			foreach (string file in files)
+			try
 			{
-				using (var localizer = new Localizer())
+				string[] files = FileManager.GetFilesInFolder(txtExcelFilesPath.Text);
+
+				foreach (string file in files)
 				{
-					localizer.ProcessTemplate(txtTemplatePath.Text, file);
+					// Since we are getting all files we should avoid some of them
+					if (System.IO.Path.GetFileName(file).StartsWith("~") == false)
+					{
+						using (var localizer = new Localizer())
+						{
+							Log(localizer.ProcessTemplate(txtTemplatePath.Text, file));
+						}
+					}
 				}
 			}
+			catch (Exception ex)
+			{
+				Log($"Error: {ex.Message}");
+			}
+
+			Log("Localization finished");
 		}
 
 		private void CloseApplication(object sender, RoutedEventArgs e)
@@ -61,7 +78,7 @@ namespace HtmlLocalizer.UI
 			this.Close();
 		}
 
-		void WindowClosing(object sender, CancelEventArgs e)
+		private void WindowClosing(object sender, CancelEventArgs e)
 		{
 			var result = MessageBox.Show("Do you really want to exit?", "Html Localizer", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -69,6 +86,12 @@ namespace HtmlLocalizer.UI
 			{
 				e.Cancel = true;
 			}
+		}
+
+		private void Log(string message)
+		{
+			txtLog.AppendText($"[{DateTime.Now}] {message}");
+			txtLog.AppendText("\r\n");
 		}
 	}
 }
