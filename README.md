@@ -12,6 +12,7 @@ A simple tool which localizes a HTML document using an Excel as data source. It 
 
 ## How does it work?
 The tool will:
+
 1. Loop through all Excel files located in the folder you selected
 2. Get the keys and values from each the Excel
 3. Load the template file
