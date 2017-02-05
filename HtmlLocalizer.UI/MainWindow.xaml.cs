@@ -51,6 +51,8 @@ namespace HtmlLocalizer.UI
 
 			try
 			{
+				ValidateTextInputs();
+
 				string[] files = FileManager.GetFilesInFolder(txtExcelFilesPath.Text);
 
 				foreach (string file in files)
@@ -71,6 +73,31 @@ namespace HtmlLocalizer.UI
 			}
 
 			Log("Localization finished");
+		}
+
+		private void ValidateTextInputs()
+		{
+			var excelValidation = PathValidation.ValidateExcelTextBox(txtExcelFilesPath.Text);
+
+			if (excelValidation == ValidationEnum.EmptyExcelPath)
+			{
+				throw new Exception("You must select the place where the EXCEL files are located");
+			}
+			else if (excelValidation == ValidationEnum.InvalidExcelPath)
+			{
+				throw new Exception("EXCEL path is invalid");
+			}
+
+			var templateValidation = PathValidation.ValidateTemplateTextBox(txtTemplatePath.Text);
+
+			if (templateValidation == ValidationEnum.EmptyTemplatePath)
+			{
+				throw new Exception("You must select the TEMPLATE file.");
+			}
+			else if (templateValidation == ValidationEnum.InvalidTemplatePath)
+			{
+				throw new Exception("TEMPLATE path is invalid");
+			}
 		}
 
 		private void CloseApplication(object sender, RoutedEventArgs e)

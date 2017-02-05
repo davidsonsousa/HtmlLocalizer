@@ -100,8 +100,6 @@ namespace HtmlLocalizer
 
 				if (File.Exists(path) == false)
 				{
-					//File.Create(path);
-
 					using (StreamWriter streamWriter = new StreamWriter(path, false, Encoding.UTF8))
 					{
 						streamWriter.Write(text);

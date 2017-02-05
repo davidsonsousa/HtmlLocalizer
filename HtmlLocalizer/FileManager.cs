@@ -11,14 +11,7 @@ namespace HtmlLocalizer
 	{
 		public static string[] GetFilesInFolder(string path)
 		{
-			string[] files = { };
-
-			if (Directory.Exists(path))
-			{
-				files = Directory.GetFiles(path, "*.xlsx");
-			}
-
-			return files;
+			return Directory.GetFiles(path, "*.xlsx");
 		}
 	}
 }
